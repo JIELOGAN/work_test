@@ -13,6 +13,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from django.http import Http404
 from django.http import HttpResponseRedirect
+# from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from docx import Document
 from docx.shared import Inches
@@ -25,8 +27,19 @@ from docx.shared import Pt
 def file_parse(request):
     if request.method =='GET':
         assets_info = sinorail_assets.objects.all()
-        context = {'assets_info': assets_info}
+## 分页
+        page = request.GET.get('page', 1)
+        paginator = Paginator(assets_info, 5)
+        try:
+            assets_page = paginator.page(page)
+        except PageNotAnInteger:
+            assets_page = paginator.page(1)
+        except EmptyPage:
+            assets_page = paginator.page(paginator.num_pages)
+
+        context = {'assets_info': assets_info, 'assets_page': assets_page}
         return render(request, 'logfile/file_parse.html', context)
+
     elif request.method == 'POST':
         data = request.data.get('data')
         try:
