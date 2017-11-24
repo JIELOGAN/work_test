@@ -1,0 +1,119 @@
+{% extends 'index.html' %}
+{% block page-content %}
+
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header"><i class="fa  fa-filter"></i> 报告生成</h1>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <form method="post" enctype="multipart/form-data">
+                            <table class="table table-hover table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>sn</th>
+                                        <th>资产名</th>
+                                        <th>资产类型</th>
+                                        <th>IP地址</th>
+                                        <th>机柜地址</th>
+                                        <th>车站</th>
+{#                                                <th>解析</th>#}
+                                        <th>报告</th>
+                                    </tr>
+                                </thead>
+                                {% for item in assets_page %}
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ item.sn }}</td>
+                                            <td>{{ item.device_name }}</td>
+                                            <td>{{ item.assets_type}}</td>
+                                            <td>{{ item.ip_address }}</td>
+                                            <td>{{ item.cab_address }}</td>
+                                            <td>{{ item.station_id }}</td>
+{#													<td>#}
+{#														{% csrf_token %}#}
+{#														<input type="button" class="btn btn-info btn-xs" name="{{item.sn}}" value="解析日志" onclick="Parsefunc(this.name)">#}
+{#                                                    </td>#}
+                                            <td>
+                                                {% csrf_token %}
+                                                <input type="button" class="btn btn-info btn-xs" name="{{item.sn}}" value="生成报告" onclick="get_report(this.name)">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                {% endfor %}
+                            </table>
+                        </form>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+                <!-- /.col-lg-12 -->
+        {% if assets_page.has_other_pages %}
+            <ul class="pagination">
+                {% if assets_page.has_previous %}
+                    <li><a href="?page={{ assets_page.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in assets_page.paginator.page_range %}
+                    {% if assets_page.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if assets_page.has_next %}
+                    <li><a href="?page={{ assets_page.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+            <!-- /.row -->
+
+
+<script type="text/javascript">
+{#	function Parsefunc(dataname){#}
+{#		$.ajax({#}
+{#			url:"/file_parse/",#}
+{#			type:"POST",#}
+{#			contentType: "application/json",#}
+{#			data:JSON.stringify({#}
+{#				'data1':dataname#}
+{#			})  //提交参数#}
+{#//\\			success:function(response){#}
+{#//				window.location.href = '/data_bi/';#}
+{#//			},#}
+{#//	    	error:function(response){#}
+{#//	    		window.wxc.xcConfirm("失败~", window.wxc.xcConfirm.typeEnum.error);#}
+{#//	    	}#}
+{#		})#}
+{#	}#}
+    function get_report(dataname){
+		$.ajax({
+			url:"/file_parse/",
+			type:"POST",
+			contentType: "application/json",
+			data:JSON.stringify({
+                'data':dataname
+			})  //提交参数
+//\\			success:function(response){
+//				window.location.href = '/data_bi/';
+//			},
+//	    	error:function(response){
+//	    		window.wxc.xcConfirm("失败~", window.wxc.xcConfirm.typeEnum.error);
+//	    	}
+		})
+	}
+
+
+</script>
+{% endblock %}
+
