@@ -108,7 +108,7 @@ def file_parse(request):
                 # paragraph3.add_run(str(system_name))
 
                 report.add_paragraph('1.硬件清单', 'H1')
-                report.add_paragraph('网络设备：', 'H2')
+                report.add_paragraph('网络设备：共 '+ str(assets_length) + ' 台', 'H2')
 
                 # 创建表
                 device_table = report.add_table(assets_length + 1, 6, style='Table Grid')
@@ -132,10 +132,10 @@ def file_parse(request):
                 report.add_paragraph('异常情况说明：_____________________________________________________________', 'Normal')
                 report.add_paragraph('2.运行状态检查', 'Normal')
                 runtime_table = report.add_table(2, 2, style='Table Grid')
-                runtime_table.cell(0, 0).text = '系统时钟(NTP)       [ ]正常           [ ]不正常'
+                runtime_table.cell(0, 0).text = '系统时钟（NTP）     [ ]正常           [ ]不正常'
                 runtime_table.cell(0, 1).text = '启动文件信息         [ ]正常          [ ]不正常'
                 runtime_table.cell(1, 0).text = 'OSPF错误统计        [ ]正常           [ ]不正常'
-                runtime_table.cell(1, 1).text = 'OSPF邻居信息        [ ]正常           [ ]不正常'
+                runtime_table.cell(1, 1).text = 'OSPF邻居信息         [ ]正常          [ ]不正常'
                 report.add_paragraph('异常情况说明：_____________________________________________________________', 'Normal')
                 report.add_paragraph('3.安全性检查', 'Normal')
                 security_table = report.add_table(2, 2, style='Table Grid')
@@ -176,6 +176,12 @@ def file_parse(request):
                     values = list(assets_data[i].values())
                     for r in range(len(keys)):
                         device_table.cell(i + 1, r).text = str(values[r])
+
+                # 添加一列序号
+                device_table.add_column(Inches(0.25))
+                device_table.cell(0, 6).text = 'num'
+                for i in range(assets_length):
+                    device_table.cell(i+1,6).text = str(i+1)
 
                 # 填入状态说明
                 # temp_data = list(hardware_data[0].items())
